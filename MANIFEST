@@ -337,9 +337,15 @@ lib/npg_tracking/data/reference/info.pm
 lib/npg_tracking/data/reference/list.pm
 lib/npg_tracking/data/transcriptome.pm
 lib/npg_tracking/data/transcriptome/find.pm
+lib/npg_tracking/glossary/composition.pm
+lib/npg_tracking/glossary/composition/component.pm
+lib/npg_tracking/glossary/composition/component/illumina.pm
+lib/npg_tracking/glossary/composition/factory.pm
+lib/npg_tracking/glossary/composition/serializable.pm
 lib/npg_tracking/glossary/flowcell.pm
 lib/npg_tracking/glossary/lane.pm
 lib/npg_tracking/glossary/run.pm
+lib/npg_tracking/glossary/subset.pm
 lib/npg_tracking/glossary/tag.pm
 lib/npg_tracking/illumina/run.pm
 lib/npg_tracking/illumina/run/folder.pm
@@ -465,6 +471,10 @@ t/10-model-usergroup.t
 t/10-model.t
 t/10-npg_testing-db.t
 t/10-npg_testing-html.t
+t/10-npg_tracking-glossary-composition-component.t
+t/10-npg_tracking-glossary-composition-component-illumina.t
+t/10-npg_tracking-glossary-composition-factory.t
+t/10-npg_tracking-glossary-composition.t
 t/10-npg_tracking-status.t
 t/10-npg_tracking-util-db_connect.t
 t/10-npg_tracking-util-config.t
@@ -1087,6 +1097,7 @@ t/data/repos1/st/batches/25715.xml
 t/data/repos1/st/samples/1327533.xml
 t/data/repos1/st/samples/1327535.xml
 t/data/repos1/st/samples/1382839.xml
+t/data/repos1/st/samples/1327539.xml
 t/data/repos1/st/samples/1807468.xml
 t/data/repos1/st/samples/1830658.xml
 t/data/repos1/st/studies/2072.xml
@@ -1101,8 +1112,11 @@ t/data/samplesheet/6946_extended.csv
 t/data/samplesheet/7007_extended.csv
 t/data/samplesheet/8pools_extended.csv
 t/data/samplesheet/miseq_default.csv
+t/data/samplesheet/miseq_default_dual_index.csv
 t/data/samplesheet/miseq_extended.csv
+t/data/samplesheet/dual_index_extended.csv
 t/data/samplesheet/multilane.csv
+t/data/samplesheet/st/batches/1.xml
 t/data/samplesheet/st/batches/16538.xml
 t/data/samplesheet/st/batches/13994.xml
 t/data/samplesheet/st/batches/14505.xml

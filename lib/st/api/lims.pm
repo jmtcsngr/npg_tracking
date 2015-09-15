@@ -40,9 +40,10 @@ Generic NPG pipeline oriented LIMS wrapper capable of retrieving data from multi
 
 Readonly::Scalar my  $CACHED_SAMPLESHEET_FILE_VAR_NAME => 'NPG_CACHED_SAMPLESHEET_FILE';
 
-Readonly::Scalar my  $PROC_NAME_INDEX   => 3;
-Readonly::Hash   my  %QC_EVAL_MAPPING   => {'pass' => 1, 'fail' => 0, 'pending' => undef, };
-Readonly::Scalar my  $INLINE_INDEX_END  => 10;
+Readonly::Scalar my  $PROC_NAME_INDEX      => 3;
+Readonly::Hash   my  %QC_EVAL_MAPPING      => {'pass' => 1, 'fail' => 0, 'pending' => undef, };
+Readonly::Scalar my  $INLINE_INDEX_END     => 10;
+Readonly::Scalar my $DUAL_INDEX_TAG_LENGTH => 16;
 
 Readonly::Hash   my  %METHODS           => {
 
@@ -51,6 +52,7 @@ Readonly::Hash   my  %METHODS           => {
                            is_control
                            bait_name
                            default_tag_sequence
+                           default_tagtwo_sequence
                            required_insert_size_range
                            qc_state
                       /],
@@ -118,6 +120,12 @@ has 'driver_type' => (
                      );
 sub _build_driver_type {
   my $self = shift;
+  if($self->has_driver){
+    my $type = ref $self->driver;
+    my $prefix = __PACKAGE__ . q(::);
+    $type =~ s/\A\Q$prefix\E//smx;
+    return $type;
+  }
   my $cached_path = $ENV{$CACHED_SAMPLESHEET_FILE_VAR_NAME};
   if ($self->_has_path || ($cached_path && -f $cached_path)) {
     if (!$self->_has_path) {
@@ -135,9 +143,10 @@ Driver object (xml, warehouse, samplesheet)
 
 =cut
 has 'driver' => (
-                          'is'      => 'ro',
-                          'lazy'    => 1,
-                          'builder' => '_build_driver',
+                          'is'        => 'ro',
+                          'lazy'      => 1,
+                          'builder'   => '_build_driver',
+                          'predicate' => 'has_driver',
 );
 sub _build_driver {
   my $self = shift;
@@ -315,6 +324,7 @@ sub is_phix_spike {
 
 Read-only string accessor, not possible to set from the constructor.
 Undefined on a lane level and for zero tag_index.
+Multiple indexes are concatenated.
 
 =cut
 has 'tag_sequence' =>    (isa             => 'Maybe[Str]',
@@ -324,18 +334,64 @@ has 'tag_sequence' =>    (isa             => 'Maybe[Str]',
                          );
 sub _build_tag_sequence {
   my $self = shift;
-  my $seq;
+  if( @{$self->tag_sequences} ) {
+    return join q[], @{$self->tag_sequences};
+  }
+  return;
+}
+
+=head2 tag_sequences
+
+Read-only array accessor, not possible to set from the constructor.
+Empty array on a lane level and for zero tag_index.
+
+Might return not the index given by LIMs, but the one contained in the
+sample description.
+
+If dual index is used, the array contains two sequences. The secons index
+might come from LIMS or, if LIMs has one long index, it will be split in two.
+
+=cut
+has 'tag_sequences' =>   (isa             => 'ArrayRef',
+                          is              => 'ro',
+                          init_arg        => undef,
+                          lazy_build      => 1,
+                         );
+sub _build_tag_sequences {
+  my $self = shift;
+
+  my ($seq, $seq2);
   if ($self->tag_index) {
-    if (!$self->is_phix_spike) {
+    if (!$self->spiked_phix_tag_index || $self->tag_index != $self->spiked_phix_tag_index) {
       if ($self->sample_description) {
         $seq = _tag_sequence_from_sample_description($self->sample_description);
       }
     }
     if (!$seq) {
-      return $self->default_tag_sequence;
+      $seq = $self->default_tag_sequence;
+      if ($seq && $self->default_tagtwo_sequence) {
+        $seq2 = $self->default_tagtwo_sequence;
+      }
     }
   }
-  return $seq;
+
+  my @sqs = ();
+  if ($seq) {
+    push @sqs, $seq;
+  }
+  if ($seq2) {
+    push @sqs, $seq2;
+  }
+
+  if (scalar @sqs == 1) {
+    if (length($sqs[0]) == $DUAL_INDEX_TAG_LENGTH) {
+      my $tag_length = $DUAL_INDEX_TAG_LENGTH/2;
+      push @sqs, substr $sqs[0], $tag_length;
+      $sqs[0] = substr $sqs[0], 0, $tag_length;
+    }
+  }
+
+  return \@sqs;
 }
 
 =head2 tags

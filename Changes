@@ -1,4 +1,23 @@
 CHANGES
+ - transcriptome find updated for RNA-SeQC directory and its gtf file 
+ - generic serializable sequence composition framework and illumina
+   sequencing specific component
+ - lims shim now works out driver type from a given driver
+ - sequencing failure RT emails cope with GCLP (no batch_id)
+
+release 84.8
+ - jenkins daemon definition: remove hardcoded path to prod user home directory
+ - refactor snv finder to stop warnings when ref genome is undefined RT#481506
+ - make function for parsing reference gemone public since it is used outside
+   of the module where it is defined
+ - use RTAComplete file in fallback local (instead of ftp) determination of run
+   progress (which is consistent with ftp process and required for HiSeqX)
+
+release 84.7
+ - accommodate LIMs-defined dual indexes
+ - Illumina samplesheet generation: do not truncate single index when shorter first
+     part of dual index is present; this was written with spiked Phix in mind,
+     however, spikes are not reflected in LIMs for MiSeq runs
 
 release 84.6
  - when changing ownership of run folder, set gid bit on every level
