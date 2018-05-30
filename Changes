@@ -1,5 +1,6 @@
 LIST OF CHANGES
 
+ - use lims_url config file entry to set PSD server location
  - gseq cluster hoop jumping for test 10-gbs_plex.t
  - use bwa0_6 as default aligner when searching for references
  - long_info role:
