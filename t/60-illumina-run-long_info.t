@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 62;
+use Test::More tests => 50;
 use Test::Exception;
 use Test::Deep;
 use File::Temp qw(tempdir);
@@ -141,14 +141,7 @@ sub create_staging {
   `mkdir -p $qc_subpath`;
   `mkdir $basecalls_subpath`;
   `mkdir $config_path`;
-  `cp t/data/long_info/Recipe_GA2-PEM_MP_2x76Cycle+8_v7.7.xml $runfolder_path/`;
   `cp t/data/long_info/TileLayout.xml $config_path/`;
-  return 1;
-}
-
-sub create_latest_summary_link {
-  create_staging();
-  `ln -s $gerald_subpath $runfolder_path/Latest_Summary`;
   return 1;
 }
 
@@ -161,23 +154,8 @@ my $orig_dir = getcwd();
   create_staging();
 
   lives_ok  { $long_info = test::long_info->new({id_run => 1234}); } q{created role_test object ok};
-  is($long_info->is_paired_read(), 1, q{Read is paired});
-  lives_ok  { $long_info = test::long_info->new({id_run => 1234}); } q{created role_test object ok};
-  is($long_info->is_indexed(), 1, q{Read is indexed});
-
-  lives_ok  { $long_info = test::long_info->new({id_run => 1234}); } q{created role_test object ok};
-  is($long_info->lane_count(), 8, q{correct number of lanes});
-
-  lives_ok  { $long_info = test::long_info->new({id_run => 1234}); } q{created role_test object ok};
-  is($long_info->expected_cycle_count(), 160, q{correct number of expected cycles});
-  lives_ok  { $long_info = test::long_info->new({id_run => 1234}); } q{created role_test object ok};
-  is($long_info->cycle_count(), 160, q{cycle count returns the same as expected_cycle_count});
-
-  lives_ok  { $long_info = test::long_info->new({id_run => 1234}); } q{created role_test object ok};
   is($long_info->tilelayout_columns(), 2, q{correct number of tilelayout_columns});
-  lives_ok  { $long_info = test::long_info->new({id_run => 1234}); } q{created role_test object ok};
   is($long_info->tilelayout_rows(), 60, q{correct number of tilelayout_rows});
-  lives_ok  { $long_info = test::long_info->new({id_run => 1234}); } q{created role_test object ok};
   is($long_info->tile_count(), 120, q{correct number of tiles});
 }
 

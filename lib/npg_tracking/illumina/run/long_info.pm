@@ -347,8 +347,6 @@ foreach my $f ( qw(expected_cycle_count
      if( !$self->$has_method_name ) { # If array is empty
        try {
          $self->_runinfo_store();
-       } catch {
-         $self->_recipe_store();
        };
      }
    };
@@ -606,68 +604,6 @@ has q{_workflow_type} => (
 sub _build__workflow_type {
   my $self = shift;
   return _get_single_element_text($self->_run_params(), 'WorkflowType');
-}
-
-
-has q{_recipe_store} => (
-  is         => 'ro',
-  isa        => 'XML::LibXML::Document',
-  lazy_build => 1,
-  init_arg   => undef,
-);
-sub _build__recipe_store {
-  my $self = shift;
-
-  my $doc = $self->_get_xml_document(qr/Recipe\S*?[.]xml/smx, $self->runfolder_path());
-  my @nodelist = $doc->getElementsByTagName('Protocol');
-
-  $self->_set_lane_count($doc->getElementsByTagName('Lane')->size);
-  $self->_set_expected_cycle_count(sum map { $_->getElementsByTagName('Incorporation')->size() } @nodelist);
-
-  my $rc = {
-    count => 0, #restarts with each read
-    start => 1, #start of current read
-    index => 0, #from first read
-    read_index => 1, #non-indexing/mutiplex read number
-    indexingcurrent =>0,
-  };
-  my $indexprepelementfound;
-
-  foreach ( map { $_->getElementsByTagName(q(*)) } @nodelist){
-
-    if ( $_->localname eq 'Incorporation' ) {
-
-      $rc->{count}++; $rc->{index}++;
-
-    } elsif ($_->localname eq 'ChemistryRef') {
-
-      if ( $_->getAttribute('Name') =~ /(\AEnd)|(FirstBase\Z)/smx ) {
-
-        $self->_set_values_at_end_of_read( $rc );
-        if ( $indexprepelementfound or ( $_->getAttribute('Name') =~ /\AIndexing/smx ) ) {
-
-          $rc->{indexingcurrent} = 1;
-          $indexprepelementfound = 0;
-
-        } else {
-
-          $rc->{indexingcurrent} = 0;
-
-        }
-
-      } elsif ($_->getAttribute('Name') eq q(IndexingPreparation)) {
-
-        $indexprepelementfound = 1;
-
-      }
-
-    }
-
-  }
-
-  $self->_set_values_at_end_of_read($rc);
-
-  return $doc;
 }
 
 has q{_runinfo_store} => (
