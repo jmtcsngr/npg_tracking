@@ -1,5 +1,8 @@
 LIST OF CHANGES
 
+ - modify staging area daemon so processing for each folder is wrapped as
+   try/catch block
+
 release 88.2.1
  - patch to accommodate different URL info passed to the CGI
    module by different Apache httpd versions
