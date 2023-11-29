@@ -2,6 +2,7 @@
 
 set -e -u -x
 
+echo "May be will try to switch to branch $WSI_NPG_BUILD_BRANCH"
 WSI_NPG_GITHUB_URL=${WSI_NPG_GITHUB_URL:=https://github.com/wtsi-npg}
 WSI_NPG_BUILD_BRANCH=${WSI_NPG_BUILD_BRANCH:=devel}
 
@@ -21,9 +22,10 @@ for repo in "$@" ; do
     cd "/tmp/${repo}.git"
 
     # Shift off master to appropriate branch (if possible)
+    echo "Want to switch to branch $WSI_NPG_BUILD_BRANCH"
     git ls-remote --heads --exit-code origin "$WSI_NPG_BUILD_BRANCH" && \
-	    git pull origin "$WSI_NPG_BUILD_BRANCH" && \
-	    echo "Switched to branch $WSI_NPG_BUILD_BRANCH"
+      git pull origin "$WSI_NPG_BUILD_BRANCH" && \
+      echo "Switched to branch $WSI_NPG_BUILD_BRANCH"
     repos="$repos /tmp/${repo}.git"
 done
 
