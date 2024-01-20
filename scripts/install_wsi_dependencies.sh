@@ -2,7 +2,9 @@
 
 set -e -u -x
 
+echo "WSI_NPG_GITHUB_URL -> ${WSI_NPG_GITHUB_URL}";
 WSI_NPG_GITHUB_URL=${WSI_NPG_GITHUB_URL:=https://github.com/wtsi-npg}
+echo "WSI_NPG_GITHUB_URL -> ${WSI_NPG_GITHUB_URL}";
 # WSI_NPG_BUILD_BRANCH is undefined outside of pull request, ie on push.
 if [ -z ${WSI_NPG_BUILD_BRANCH} ]
 then
@@ -13,6 +15,7 @@ then
     WSI_NPG_BUILD_BRANCH=devel
   fi
 fi
+echo "WSI_NPG_BUILD_BRANCH -> ${WSI_NPG_BUILD_BRANCH}";
 
 # The first argument is the install base for NPG modules, enabling them to be
 # installed independently of CPAN dependencies. E.g. for cases where we want
