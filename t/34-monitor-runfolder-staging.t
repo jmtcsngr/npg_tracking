@@ -95,6 +95,8 @@ subtest 'computing glob and updating run data from filesystem' => sub {
       team => 'A',
       expected_cycle_count => 310,
       actual_cycle_count => 0,
+      folder_name => undef,
+      folder_path_glob => undef,
     };
     my $run = $schema->resultset('Run')->find($id_run);
     $run->update($run_data);
