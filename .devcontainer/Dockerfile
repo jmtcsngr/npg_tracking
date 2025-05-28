@@ -5,4 +5,8 @@ RUN DEBIAN_FRONTEND=noninteractive \
   && apt-get install -yq \
     curl \
     git \
+    libdevel-patchperl-perl \
+    libgd-dev uuid-dev \
+    libgd-text-perl \
+    libmodule-runtime-perl \
     mysql-client
