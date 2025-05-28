@@ -9,4 +9,5 @@ RUN DEBIAN_FRONTEND=noninteractive \
     libgd-dev uuid-dev \
     libgd-text-perl \
     libmodule-runtime-perl \
+    libmysqlclient-dev \
     mysql-client
